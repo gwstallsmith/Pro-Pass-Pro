@@ -109,7 +109,6 @@ def sign_up():
 def display_info():
     # Check if 'ID' and 'Username' cookies are present
 
-
     if 'ID' in request.cookies and 'Username' in request.cookies:
         user_id = request.cookies.get('ID')
 
