@@ -1,40 +1,47 @@
-# Data Security and Privacy Project
+# Puff Puff Pass - Password Manager
 
 ## Overview
 
-Welcome to the Data Security and Privacy Project! This project is dedicated to ensuring the protection of sensitive data and the privacy of individuals through robust security measures and best practices. This README provides an introduction to the project, its goals, and guidelines for contributors.
+Puff Puff Pass is a secure and user-friendly password manager designed to safeguard your sensitive information while offering convenient access to your credentials. It employs robust encryption techniques to ensure the safety of your passwords, ensuring they are only accessible to you.
 
-## Table of Contents
+## Features
 
-- [Project Goals](#project-goals)
-- [Getting Started](#getting-started)
-- [Contributing](#contributing)
-- [Code of Conduct](#code-of-conduct)
-- [License](#license)
-
-## Project Goals
-
-The primary goals of this project are:
-
-1. **Data Protection**: Develop and implement data security measures to safeguard sensitive information from unauthorized access, disclosure, or data breaches.
-
-2. **Privacy Preservation**: Promote practices and technologies that respect individuals' privacy rights, ensuring data is collected, processed, and stored responsibly.
-
-3. **Education and Awareness**: Educate individuals, businesses, and organizations on best practices for data security and privacy.
-
-4. **Open Source Tools**: Create and maintain open source tools and resources that help others enhance their data security and privacy efforts.
+- **Secure Storage:** Utilizes state-of-the-art encryption to store passwords securely.
+- **User-Friendly Interface:** Intuitive design for easy navigation and accessibility.
+- **Password Generator:** Create strong, unique passwords with our built-in generator.
 
 ## Getting Started
 
-Before you begin contributing to the project, make sure you have the following prerequisites:
+### Installation
 
-- [Git](https://git-scm.com/) installed on your local machine.
-- A GitHub account for collaboration.
+1. Clone the repository: `git clone https://github.com/gwstallsmith/Puff-Puff-Pass`
+2. Follow installation instructions in the `README.md` of the repository.
 
-### Clone the Repository
+### Usage
 
-1. Fork this repository to your GitHub account.
-2. Clone the forked repository to your local machine.
+1. Sign up for an account or log in.
+2. Add and manage your passwords.
+3. Access passwords across devices.
 
-```bash
-git clone https://github.com/your-username/data-security-privacy-project.git
+## Technology Stack
+
+- **Frontend:** HTML, CSS, Python
+- **Backend:** Flask
+- **Database:** SQLite
+- **Encryption:** AES-256
+
+## Contributing
+
+We welcome contributions from the community! Feel free to fork the repository, make changes, and submit pull requests.
+
+## Security
+
+Puff Puff Pass takes security seriously. If you discover any security issues, please report them to our security team immediately.
+
+## License
+
+This project is licensed under the [MIT License](link_to_license).
+
+---
+
+Feel free to add more specific details, instructions, or sections based on the functionalities, goals, or unique features of your password manager!
