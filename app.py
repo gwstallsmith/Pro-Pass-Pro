@@ -95,7 +95,6 @@ def sign_up():
             new_ID = cursor.fetchone()[0] + 1
             
             cursor.execute("INSERT INTO Credentials (ID, Username, Password) VALUES (?, ?, ?)", (new_ID, new_username, hash_password(new_password)))
-            cursor.execute("INSERT INTO PatientInformation (ID, First_Name, Last_Name) VALUES (?, ?, ?)", (new_ID, first_name, last_name))
 
             response = make_response(render_template('index.html', user=result, logged_in=True))
 
@@ -105,7 +104,7 @@ def sign_up():
         return response
 
 
-@app.route('/patient_info', methods=['GET', 'POST'])
+@app.route('/passwords', methods=['GET', 'POST'])
 def display_info():
     # Check if 'ID' and 'Username' cookies are present
 
@@ -121,18 +120,22 @@ def display_info():
 
             if user and user[3]:
                 # User is an admin, display all users
-                all_users = cursor.execute("SELECT * FROM PatientInformation").fetchall()
-                return render_template('patient_info.html', users = all_users)
+                all_users = cursor.execute("SELECT * FROM Passwords").fetchall()
+                return render_template('passwords.html', users = all_users)
             else:
                 # User is not an admin, display single user
-                user_data = cursor.execute("SELECT * FROM PatientInformation WHERE ID = ?", (user_id,)).fetchone()
-                user_data_decrypt = user_data + (decrypt(user_data[7]),)
-                print(user_data_decrypt[8])
-                return render_template('patient_info.html', user = user_data_decrypt)
+                user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchone()
+
+                print(user_data)
+
+                #user_data_decrypt = user_data + (decrypt(user_data[7]),)
+                #print(user_data_decrypt[8])
+                return render_template('passwords.html', user = user_data)
     else:
         # If cookies are not present, redirect to login page or handle the situation accordingly
         return redirect('/login')
 
+#@app.route('/more', methods=['GET', 'POST'])
 
 if __name__ == '__main__':
     app.run()

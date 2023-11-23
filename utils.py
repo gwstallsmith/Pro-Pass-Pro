@@ -31,25 +31,21 @@ def generateMoreUsers():
             new_ID = cursor.fetchone()[0] + 1
             
             cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?)", (new_ID, first_name + last_name + str(new_ID), hash_password(first_name + last_name), False))
-            cursor.execute("INSERT INTO PatientInformation (ID, First_Name, Last_Name, Gender, Age, Weight, Height, Health_History) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (new_ID, first_name, last_name, gender, age, weight, height, history))
 
 
 def delete_all():
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
 
-        cursor.execute('DELETE FROM PatientInformation')
         cursor.execute('DELETE FROM Credentials')
 
         cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?, ?)", (1, "admin", hash_password("adpass"), True))
-        cursor.execute("INSERT INTO PatientInformation (ID, First_Name, Last_Name) VALUES (?, ?, ?)", (1, "Bilbo", "Baggins"))
+        cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (1, "YouTube", "https://www.youtube.com/", "ytadmin"))
 
         cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?, ?)", (2, "notadmin", hash_password("adfail"), False))
-        cursor.execute("INSERT INTO PatientInformation (ID, First_Name, Last_Name) VALUES (?, ?, ?)", (2, "Frodo", "Baggins"))
-
+        cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (2, "YouTube", "https://www.youtube.com/", "ytfail"))
     return
 
-@app.route('/more', methods=['GET', 'POST'])
 def generateMoreUsers():
     delete_all()
 
@@ -79,3 +75,18 @@ def remove_user(id):
         cursor = connection.cursor()
         cursor.execute("DELETE FROM Credentials WHERE ID = ?", (id,))
 
+@app.route('/more', methods=['GET', 'POST'])
+def remove_table():
+    with sqlite3.connect("db.sqlite3") as connection:
+        cursor = connection.cursor()
+        cursor.execute("DROP TABLE IF EXISTS PatientInformation")
+
+        connection.commit()
+        connection.close()
+
+def create_table():
+    with sqlite3.connect("db.sqlite3") as connection:
+        cursor = connection.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS Passwords (ID INTEGER PRIMARY KEY, SiteName TEXT NOT NULL, url TEXT NOT NULL, Password TEXT NOT NULL, FOREIGN KEY (ID) REFERENCES Credentials(ID))")
+        connection.commit()
+        connection.close()
