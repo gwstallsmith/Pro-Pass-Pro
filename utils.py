@@ -74,8 +74,8 @@ def remove_user(id):
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
         cursor.execute("DELETE FROM Credentials WHERE ID = ?", (id,))
+        cursor.execute("DELETE FROM Passwords WHERE ID = ?", (id,))
 
-@app.route('/more', methods=['GET', 'POST'])
 def remove_table():
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
@@ -87,6 +87,11 @@ def remove_table():
 def create_table():
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS Passwords (ID INTEGER PRIMARY KEY, SiteName TEXT NOT NULL, url TEXT NOT NULL, Password TEXT NOT NULL, FOREIGN KEY (ID) REFERENCES Credentials(ID))")
+        cursor.execute("CREATE TABLE IF NOT EXISTS Passwords (ID INTEGER, SiteName TEXT NOT NULL, url TEXT NOT NULL, Password TEXT NOT NULL, FOREIGN KEY (ID) REFERENCES Credentials(ID))")
         connection.commit()
         connection.close()
+
+def remove_user_passwords(id):
+    with sqlite3.connect("db.sqlite3") as connection:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM Passwords WHERE ID = ?", (id,))

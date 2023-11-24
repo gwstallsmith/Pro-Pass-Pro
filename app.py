@@ -65,11 +65,9 @@ def sign_up_form():
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
     sign_up_form()
+
     new_username = request.form['username']
     new_password = request.form['password']
-
-    first_name = request.form['firstname']
-    last_name = request.form['lastname']
 
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
@@ -94,15 +92,17 @@ def sign_up():
             cursor.execute("SELECT MAX(ID) FROM Credentials")
             new_ID = cursor.fetchone()[0] + 1
             
-            cursor.execute("INSERT INTO Credentials (ID, Username, Password) VALUES (?, ?, ?)", (new_ID, new_username, hash_password(new_password)))
+            cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?, ?)", (new_ID, new_username, hash_password(new_password), False))
+
+            result = cursor.execute("SELECT * FROM Credentials WHERE ID = ?", (new_ID,)).fetchone()
 
             response = make_response(render_template('index.html', user=result, logged_in=True))
 
-            response.set_cookie('ID', new_ID)
+            response.set_cookie('ID', str(new_ID))
             response.set_cookie('Username', new_username)
         
         return response
-
+    
 
 @app.route('/passwords', methods=['GET', 'POST'])
 def display_info():
@@ -124,18 +124,72 @@ def display_info():
                 return render_template('passwords.html', users = all_users)
             else:
                 # User is not an admin, display single user
-                user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchone()
+                user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
-                print(user_data)
+                if not user_data:
+                    return render_template('passwords.html')
+        
+                user_data_decrypt = []
+                for row in user_data:
+                    decrypted_value = decrypt(row[3])
+                    new_row = row + (decrypted_value,)
+                    user_data_decrypt.append(new_row)
 
-                #user_data_decrypt = user_data + (decrypt(user_data[7]),)
-                #print(user_data_decrypt[8])
-                return render_template('passwords.html', user = user_data)
+                return render_template('passwords.html', user = user_data_decrypt)
     else:
         # If cookies are not present, redirect to login page or handle the situation accordingly
         return redirect('/login')
 
-#@app.route('/more', methods=['GET', 'POST'])
+@app.route('/store_password', methods=['GET', 'POST'])
+def store_passwords():
+    error = None
+
+    user_id = request.cookies.get('ID')
+    site_name = request.form['siteName']
+    url = request.form['url']
+    new_password = request.form.get('newPassword')
+
+
+
+
+    with sqlite3.connect("db.sqlite3") as connection:
+        cursor = connection.cursor()
+        user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
+
+
+        entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? OR url = ?", (user_id, site_name, url)).fetchone()
+
+
+        if entry_exists:
+            error = "Password already exists"
+            user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
+
+            user_data_decrypt = []
+            for row in user_data:
+                decrypted_value = decrypt(row[3])
+                new_row = row + (decrypted_value,)
+                user_data_decrypt.append(new_row)
+
+            return render_template('passwords.html', user = user_data_decrypt, error = error)
+
+
+        else:
+            cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, site_name, url, encrypt(new_password)))
+            user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
+
+            user_data_decrypt = []
+            for row in user_data:
+                decrypted_value = decrypt(row[3])
+                new_row = row + (decrypted_value,)
+                user_data_decrypt.append(new_row)
+
+            return render_template('passwords.html', user = user_data_decrypt)
+
+
+
+@app.route('/more', methods=['GET', 'POST'])
+def more():
+    None
 
 if __name__ == '__main__':
     app.run()

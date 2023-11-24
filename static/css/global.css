@@ -1,8 +1,9 @@
 /* CSS for styling the box */
 .user-box {
-    border: 1px solid #ccc;
+    border: 1px solid #4d2600; /* Dark brown border */
     padding: 10px;
     margin-bottom: 10px;
+    background-color: #3d2819; /* Dark brown background */
 }
 
 /* CSS for styling the title */
@@ -10,6 +11,7 @@
     margin-top: 0;
     font-size: 18px;
     font-weight: bold;
+    color: #006400; /* Dark green */
 }
 
 /* CSS for styling the row within each box */
@@ -30,9 +32,12 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #4d2600; /* Dark brown background */
+    color: #3d2819; /* Dark brown text color */
 }
+
 nav {
-    background-color: #333;
+    background-color: #006400; /* Dark green */
     color: white;
     text-align: center;
 }
@@ -57,14 +62,14 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    background-color: #555;
+    background-color: #004d00; /* Dark green hover color */
 }
 
 /* Dropdown styles */
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #333;
+    background-color: #006400; /* Dark green */
     min-width: 160px;
     z-index: 1;
     padding: 0;
@@ -85,5 +90,36 @@ nav ul li a:hover {
 
 /* Style the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
-    background-color: #555;
+    background-color: #004d00; /* Dark green hover color */
+}
+
+/* Styling for labels */
+label {
+    color: #3d2819; /* Dark brown text color */
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Styling for text input */
+input[type="text"],
+input[type="password"] {
+    padding: 8px;
+    border: 1px solid #4d2600; /* Dark brown border */
+    border-radius: 4px;
+    background-color: #3d2819; /* Dark brown background */
+    color: #006400; /* Dark green text color */
+}
+
+/* Styling for submit button */
+input[type="submit"] {
+    padding: 10px 15px;
+    background-color: #006400; /* Dark green */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #004d00; /* Dark green hover color */
 }
