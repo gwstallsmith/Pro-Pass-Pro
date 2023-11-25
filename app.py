@@ -1,11 +1,15 @@
 from flask import Flask, render_template, request, make_response, redirect, url_for
 import sqlite3
 
-from crypto import hash_password, generate_shared_secret, encrypt, decrypt
-
+from crypto import *
+from utils import *
 
 app = Flask(__name__)
 
+def function():
+    var = 1
+    for i in 10:
+        var += 1
 
 @app.route('/', methods=['GET'])
 def index_page():
