@@ -95,3 +95,8 @@ def remove_user_passwords(id):
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
         cursor.execute("DELETE FROM Passwords WHERE ID = ?", (id,))
+
+def remove_site_password(id, site_name):
+    with sqlite3.connect("db.sqlite3") as connection:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ?", (id, site_name))

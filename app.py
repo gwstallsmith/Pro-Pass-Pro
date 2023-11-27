@@ -6,10 +6,6 @@ from utils import *
 
 app = Flask(__name__)
 
-def function():
-    var = 1
-    for i in 10:
-        var += 1
 
 @app.route('/', methods=['GET'])
 def index_page():
@@ -88,6 +84,8 @@ def sign_up():
 
             response.set_cookie('ID', str(result[0]))
             response.set_cookie('Username', str(result[1]))
+            generate_shared_secret(new_password)
+
 
         # Otherwise user does not exist
         # Need to sign them up
@@ -98,12 +96,15 @@ def sign_up():
             
             cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?, ?)", (new_ID, new_username, hash_password(new_password), False))
 
-            result = cursor.execute("SELECT * FROM Credentials WHERE ID = ?", (new_ID,)).fetchone()
+            user = cursor.execute("SELECT * FROM Credentials WHERE ID = ?", (new_ID,)).fetchone()
 
             response = make_response(render_template('index.html', user=result, logged_in=True))
 
-            response.set_cookie('ID', str(new_ID))
-            response.set_cookie('Username', new_username)
+            response.set_cookie('ID', str(user[0]))
+            response.set_cookie('Username', str(user[1]))
+
+            generate_shared_secret(new_password)
+
         
         return response
     
@@ -153,41 +154,48 @@ def store_passwords():
     url = request.form['url']
     new_password = request.form.get('newPassword')
 
-
-
-
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
-        user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
-
-        entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? OR url = ?", (user_id, site_name, url)).fetchone()
-
+        entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url = ?", (user_id, site_name, url)).fetchone()
 
         if entry_exists:
-            error = "Password already exists"
+            error = "Entry already exists. Changing to new password"
+            cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, site_name, url, encrypt(new_password)))
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
-
-            user_data_decrypt = []
-            for row in user_data:
-                decrypted_value = decrypt(row[3])
-                new_row = row + (decrypted_value,)
-                user_data_decrypt.append(new_row)
-
-            return render_template('passwords.html', user = user_data_decrypt, error = error)
 
 
         else:
             cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, site_name, url, encrypt(new_password)))
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
-            user_data_decrypt = []
-            for row in user_data:
-                decrypted_value = decrypt(row[3])
-                new_row = row + (decrypted_value,)
-                user_data_decrypt.append(new_row)
+        user_data_decrypt = []
+        for row in user_data:
+            decrypted_value = decrypt(row[3])
+            new_row = row + (decrypted_value,)
+            user_data_decrypt.append(new_row)
 
-            return render_template('passwords.html', user = user_data_decrypt)
+        return render_template('passwords.html', user = user_data_decrypt, error = error)
+
+@app.route('/remove_password', methods=['GET', 'POST'])
+def remove_password():
+    error = None
+    user_id = request.cookies.get('ID')
+    site_name = request.form['siteNameRem']
+
+    with sqlite3.connect("db.sqlite3") as connection:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ?", (user_id, site_name))
+
+        user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
+
+        user_data_decrypt = []
+        for row in user_data:
+            decrypted_value = decrypt(row[3])
+            new_row = row + (decrypted_value,)
+            user_data_decrypt.append(new_row)
+
+        return render_template('passwords.html', user = user_data_decrypt, error = error)
 
 
 
