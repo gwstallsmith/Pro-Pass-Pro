@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, make_response, redirect, url_for
 import sqlite3
+import string
+import random
 
 from crypto import *
 from utils import *
@@ -161,7 +163,10 @@ def store_passwords():
 
         if entry_exists:
             error = "Entry already exists. Changing to new password"
+            cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ? AND url = ? AND Password = ?", (user_id, site_name, url, encrypt(new_password)))
+
             cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, site_name, url, encrypt(new_password)))
+
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
 
@@ -196,6 +201,16 @@ def remove_password():
             user_data_decrypt.append(new_row)
 
         return render_template('passwords.html', user = user_data_decrypt, error = error)
+
+character_list = string.ascii_letters.join(string.digits).join(string.punctuation)
+
+@app.route('/create_password', methods=['GET', 'POST'])
+def create_password():
+    print(character_list)
+
+    return render_template('passwords.html')
+
+
 
 
 
