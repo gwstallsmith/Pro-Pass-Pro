@@ -175,6 +175,14 @@ input[type="password"] {
   margin: 1%; /* Adjust vertical spacing between elements */
 }
 
+button {
+    margin-top:2%;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* Optionally, set widths to labels for consistent alignment */
 label { 
     font-weight:bold;
