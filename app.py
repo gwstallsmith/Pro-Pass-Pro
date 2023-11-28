@@ -47,7 +47,7 @@ def check_credentials():
             return response
         else:
             # Simulate an incorrect login
-            error = "Invalid user credentials"
+            error = "Invalid user credentials."
         
     return render_template('login.html', error=error)
 
@@ -135,10 +135,14 @@ def display_info():
 
                 if not user_data:
                     return render_template('passwords.html')
+                
         
                 user_data_decrypt = []
                 for row in user_data:
-                    decrypted_value = decrypt(row[3])
+                    try:
+                        decrypted_value = decrypt(row[3])
+                    except:
+                        return render_template('login.html', error = "Shared secret expired.")
                     new_row = row + (decrypted_value,)
                     user_data_decrypt.append(new_row)
 
@@ -158,14 +162,18 @@ def store_passwords():
 
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
-
-        entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url = ?", (user_id, site_name, url)).fetchone()
-
+        try:
+            entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url = ?", (user_id, site_name, url)).fetchone()
+        except:
+            return render_template('login.html', error = "Shared secret expired.")
+        
         if entry_exists:
-            error = "Entry already exists. Changing to new password"
-            cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ? AND url = ? AND Password = ?", (user_id, site_name, url, encrypt(new_password)))
+            error = "Site and password already exist. Updating password."
 
-            cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, site_name, url, encrypt(new_password)))
+            try:
+                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, site_name, url))
+            except:
+                return render_template('login.html', error = "Shared secret expired")
 
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
@@ -176,7 +184,10 @@ def store_passwords():
 
         user_data_decrypt = []
         for row in user_data:
-            decrypted_value = decrypt(row[3])
+            try:
+                decrypted_value = decrypt(row[3])
+            except:
+                return render_template('login.html', error = "Shared secret expired.")
             new_row = row + (decrypted_value,)
             user_data_decrypt.append(new_row)
 

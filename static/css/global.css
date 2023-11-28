@@ -10,6 +10,8 @@ body {
     border-width: 5%;
     border-style:solid;
     border-color:white;
+    border-radius:2%;
+
     padding:2%;
 
     background-color:rgb(1,25,15);
@@ -40,6 +42,8 @@ hr {
 
     color:white;
     border: 2px solid;
+
+    border-radius:2%;
 
     padding:1%;
 
@@ -102,6 +106,7 @@ nav {
 
     border: 2px solid;
     border-color:white;
+
 }
 
 nav ul {
