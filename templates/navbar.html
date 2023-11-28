@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width, intial-scale=1.0" user-scalable="no">
   <title>Puff Puff Pass</title>
   <link rel="stylesheet" href="/static/css/global.css">
-</head>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('get_img', filename='ppplock.jpg')}}"">
 
+</head>
 <nav>
     <ul>
+        <li><a href="/"><img src="{{ url_for('get_img', filename='ppplogo.jpg')}}"></a></li>
         <li><a href="/">Home</a></li>
         {% if request.cookies.get('ID') or logged_in %}
         <li><a href="/passwords">Passwords</a></li>

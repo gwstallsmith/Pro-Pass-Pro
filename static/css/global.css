@@ -15,6 +15,12 @@ body {
     padding:2%;
 
     background-color:rgb(1,25,15);
+
+
+}
+
+.home-body {
+    text-align:center;
 }
 
 .grid-container {
@@ -27,6 +33,17 @@ body {
 
 
 }
+
+li p {
+    text-align:left;
+    font-size:20px;
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+}
+
 
 hr {
     color:white
@@ -109,18 +126,28 @@ nav {
 
 }
 
+nav img {
+    display: inline-block;
+    margin: 0 10px;
+    position: relative;
+    
+    margin-top:5%;
+    height:60px;
+    width:auto;
+
+    border-radius: 10px;
+}
+
 nav ul {
     list-style: none;
     padding: 0;
-    margin: 0;
-    
+    margin:0;
 }
 
 nav ul li {
     display: inline-block;
     margin: 0 10px;
     position: relative;
-
 }
 
 
@@ -129,8 +156,6 @@ nav ul li a {
     color: white;
     padding: 10px 15px;
     display: inline-block;
-
-
 }
 
 nav ul li a:hover {

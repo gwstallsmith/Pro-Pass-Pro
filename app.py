@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, redirect, url_for
+from flask import Flask, render_template, send_from_directory, request, make_response, redirect, url_for
 import sqlite3
 import string
 import random
@@ -8,6 +8,9 @@ from utils import *
 
 app = Flask(__name__)
 
+@app.route('/get_img/<filename>')
+def get_img(filename):
+    return send_from_directory('assets', filename)
 
 @app.route('/', methods=['GET'])
 def index_page():

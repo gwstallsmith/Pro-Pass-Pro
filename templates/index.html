@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, intial-scale=1.0" user-scalable="no">
-  <title>Prividata Secure Health</title>
+  <title>Puff Puff Pass</title>
   <link rel="stylesheet" href="/static/css/global.css">
 </head>
 
@@ -18,14 +18,26 @@
       <!-- Your content for guests here -->
   {% endif %}
 </body>
-<body>
-  <br>
+<hr>
+<body class="home-body">
   <h2><i>Too much Puff, not enough Pass?</i> We've got your back.</h2>
-  <p>Puff Puff Pass is a <b>password manager</b> designed to let you forget your passwords.</p>
-  <p>Our platform utilizes state-of-the-art encryption algorithms to ensure the confidentiality and integrity of your passwords. With strict access controls and comprehensive security measures, we prioritize the protection of sensitive data.</p>
-  <p>We utilize <b>Fernet symmetric encryption</b>. The only person who can decipher your data is <u>you</u>! Not even our admins can view your passwords.</p>
-  <p>Feel free to Puff and Puff, knowing your Passwords are safe with us.</p>
+  <div class="image-container">
+    <img src="{{ url_for('get_img', filename='elon-smoking.gif')}}">
+  </div>
+  <br>
+  <hr>
+  <ul>
+    <li><p>We know those who like to puff may experience <a style="color:white;"href="https://nida.nih.gov/publications/research-reports/marijuana/what-are-marijuanas-long-term-effects-brain" target="_blank" >memory impairment</a>. Here at Puff Puff Pass, we have the solution!</p></li>
+    <li><p><b>Puff Puff Pass</b> is a <b>password manager</b> designed to let you forget your passwords.</p></li>
+    <li><p>Our platform utilizes <b>state-of-the-art encryption algorithms</b> to ensure the confidentiality and integrity of your passwords. With strict access controls and comprehensive security measures, we <b>prioritize the protection of your passwords</b>.</p></li>
+    <li><p>We utilize <b>Fernet symmetric encryption</b>. The only person who can decipher your data is <u>you</u>!</p></li>
+  </ul>
 
+  <hr>
+  <h2>Feel free to Puff and Puff, knowing your Pass is safe with us.</h2>
+  <div class="image-container">
+    <img src="{{ url_for('get_img', filename='peace-out.gif')}}">
+  </div>
 </body>
 
 
