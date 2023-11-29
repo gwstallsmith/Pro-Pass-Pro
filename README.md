@@ -28,7 +28,7 @@ Puff Puff Pass is a secure and user-friendly password manager designed to safegu
 - **Frontend:** HTML, CSS, Python
 - **Backend:** Flask
 - **Database:** SQLite
-- **Encryption:** AES-256
+- **Encryption:** Fernet
 
 ## Contributing
 
