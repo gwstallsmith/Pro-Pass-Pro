@@ -130,7 +130,7 @@ def display_info():
 
             if user and user[3]:
                 # User is an admin, display all users
-                all_users = cursor.execute("SELECT * FROM Passwords").fetchall()
+                all_users = cursor.execute("SELECT * FROM Passwords ORDER BY ID").fetchall()
                 return render_template('passwords.html', users = all_users)
             else:
                 # User is not an admin, display single user
