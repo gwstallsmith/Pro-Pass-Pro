@@ -139,20 +139,16 @@ def display_info():
                 if not user_data:
                     return render_template('passwords.html')
                 
-
+            user_data_decrypt = []
+            for row in user_data:
                 try:
-                    for row in user_data:
-                        decrypted_values = [decrypt(value) for value in row[1:]]
-                    print(decrypted_values)
+                    decrypted_values = [decrypt(value) for value in row[1:]]
+                    user_data_decrypt.append(decrypted_values)
+
                 except:
                     return render_template('login.html', error = "Shared secret expired.")
-                
-                decrypted_values += (request.cookies.get('ID'),)
 
-
-
-                print(decrypted_values)
-                return render_template('passwords.html', user = decrypted_values)
+            return render_template('passwords.html', user = user_data_decrypt)
     else:
         # If cookies are not present, redirect to login page or handle the situation accordingly
         return redirect('/login')
@@ -168,36 +164,55 @@ def store_passwords():
 
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
-        try:
-            entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url = ?", (user_id, site_name, url)).fetchone()
-        except:
-            return render_template('login.html', error = "Shared secret expired.")
-        
+
+        user_data = cursor.execute("SELECT SiteName, url FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
+
+        entry_exists = None
+
+        for encrypted_data in user_data:
+            if decrypt(encrypted_data[0]) == site_name and decrypt(encrypted_data[1]) == url:
+                try:
+                    entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url == ?", (user_id, encrypted_data[0], encrypted_data[1]))
+                except:
+                    return render_template('login.html', error = "Shared secret expired.")
+                
         if entry_exists:
             error = "Site and password already exist. Updating password."
 
             try:
-                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, encrypt(site_name), encrypt(url)))
+                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, user_data[0][0], user_data[0][1]))
             except:
                 return render_template('login.html', error = "Shared secret expired")
 
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
+            user_data_decrypt = []
+            for row in user_data:
+                try:
+                    decrypted_values = [decrypt(value) for value in row[1:]]
+                    user_data_decrypt.append(decrypted_values)
+
+                except:
+                    return render_template('login.html', error = "Shared secret expired.")
+
+            return render_template('passwords.html', user = user_data_decrypt, error=error)
 
         else:
             cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, encrypt(site_name), encrypt(url), encrypt(new_password)))
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
-        user_data_decrypt = []
-        for row in user_data:
-            try:
-                decrypted_value = decrypt(row[3])
-            except:
-                return render_template('login.html', error = "Shared secret expired.")
-            new_row = row + (decrypted_value,)
-            user_data_decrypt.append(new_row)
 
-        return render_template('passwords.html', user = user_data_decrypt, error = error)
+            user_data_decrypt = []
+            for row in user_data:
+                try:
+                    decrypted_values = [decrypt(value) for value in row[1:]]
+                    user_data_decrypt.append(decrypted_values)
+
+                except:
+                    return render_template('login.html', error = "Shared secret expired.")
+
+            return render_template('passwords.html', user = user_data_decrypt, error=error)
+
 
 @app.route('/remove_password', methods=['GET', 'POST'])
 def remove_password():
@@ -207,34 +222,32 @@ def remove_password():
 
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
-        cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ?", (user_id, site_name))
+
+        user_data = cursor.execute("SELECT SiteName FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
+
+        for encrypted_site_name in user_data:
+            if decrypt(encrypted_site_name[0]) == site_name:
+               cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ?", (user_id, encrypted_site_name[0]))
 
         user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
         user_data_decrypt = []
         for row in user_data:
-            decrypted_value = decrypt(row[3])
-            new_row = row + (decrypted_value,)
-            user_data_decrypt.append(new_row)
+            try:
+                decrypted_values = [decrypt(value) for value in row[1:]]
+                user_data_decrypt.append(decrypted_values)
+            except:
+                return render_template('login.html', error = "Shared secret expired.")
+            
+        print(user_data_decrypt)
 
-        return render_template('passwords.html', user = user_data_decrypt, error = error)
-
-character_list = string.ascii_letters.join(string.digits).join(string.punctuation)
-
-@app.route('/create_password', methods=['GET', 'POST'])
-def create_password():
-    print(character_list)
-
-    return render_template('passwords.html')
-
-
-
-
+        return render_template('passwords.html', user = user_data_decrypt, error=error)
+    
 
 @app.route('/more', methods=['GET', 'POST'])
 def more():
     return
-    delete_all()
+    remove_user_passwords(2)
 
 if __name__ == '__main__':
     app.run()
