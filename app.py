@@ -164,17 +164,16 @@ def store_passwords():
 
     with sqlite3.connect("db.sqlite3") as connection:
         cursor = connection.cursor()
-
+            
         user_data = cursor.execute("SELECT SiteName, url FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
-
         entry_exists = None
 
-        for encrypted_data in user_data:
-            if decrypt(encrypted_data[0]) == site_name and decrypt(encrypted_data[1]) == url:
-                try:
+        try:
+            for encrypted_data in user_data:
+                if decrypt(encrypted_data[0]) == site_name and decrypt(encrypted_data[1]) == url:
                     entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url == ?", (user_id, encrypted_data[0], encrypted_data[1]))
-                except:
-                    return render_template('login.html', error = "Shared secret expired.")
+        except:
+            return render_template('login.html', error = "Shared secret expired.")
                 
         if entry_exists:
             error = "Site and password already exist. Updating password."
@@ -198,7 +197,11 @@ def store_passwords():
             return render_template('passwords.html', user = user_data_decrypt, error=error)
 
         else:
-            cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, encrypt(site_name), encrypt(url), encrypt(new_password)))
+            try:
+                cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, encrypt(site_name), encrypt(url), encrypt(new_password)))
+            except:
+                return render_template('login.html', error = "Shared secret expired.")
+            
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
 
