@@ -11,7 +11,7 @@
 {% include 'navbar.html' %}
 <body>
   {% if request.cookies.get('ID') or logged_in %}
-      <h1>Welcome, {{ user[1] if logged_in else request.cookies.get('Username')}}!</h1>
+      <h1>Welcome, {{ request.cookies.get('Username')}}!</h1>
       <!-- Your content for logged-in users here -->
   {% else %}
     <h1>Welcome to Puff Puff Pass</h1>
