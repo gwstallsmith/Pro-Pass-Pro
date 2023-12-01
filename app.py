@@ -139,17 +139,20 @@ def display_info():
                 if not user_data:
                     return render_template('passwords.html')
                 
-        
-                user_data_decrypt = []
-                for row in user_data:
-                    try:
-                        decrypted_value = decrypt(row[3])
-                    except:
-                        return render_template('login.html', error = "Shared secret expired.")
-                    new_row = row + (decrypted_value,)
-                    user_data_decrypt.append(new_row)
 
-                return render_template('passwords.html', user = user_data_decrypt)
+                try:
+                    for row in user_data:
+                        decrypted_values = [decrypt(value) for value in row[1:]]
+                    print(decrypted_values)
+                except:
+                    return render_template('login.html', error = "Shared secret expired.")
+                
+                decrypted_values += (request.cookies.get('ID'),)
+
+
+
+                print(decrypted_values)
+                return render_template('passwords.html', user = decrypted_values)
     else:
         # If cookies are not present, redirect to login page or handle the situation accordingly
         return redirect('/login')
@@ -174,7 +177,7 @@ def store_passwords():
             error = "Site and password already exist. Updating password."
 
             try:
-                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, site_name, url))
+                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, encrypt(site_name), encrypt(url)))
             except:
                 return render_template('login.html', error = "Shared secret expired")
 
@@ -182,7 +185,7 @@ def store_passwords():
 
 
         else:
-            cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, site_name, url, encrypt(new_password)))
+            cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, encrypt(site_name), encrypt(url), encrypt(new_password)))
             user_data = cursor.execute("SELECT * FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
         user_data_decrypt = []
@@ -230,7 +233,8 @@ def create_password():
 
 @app.route('/more', methods=['GET', 'POST'])
 def more():
-    None
+    return
+    delete_all()
 
 if __name__ == '__main__':
     app.run()

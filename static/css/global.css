@@ -84,6 +84,8 @@ hr {
     border: 1px dashed;
     border-color:white;
     padding:5%;
+    word-wrap:break-word
+
 }
 
 .hover-view:hover {

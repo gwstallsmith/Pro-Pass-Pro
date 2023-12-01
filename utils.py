@@ -10,12 +10,11 @@ def delete_all():
         cursor = connection.cursor()
 
         cursor.execute('DELETE FROM Credentials')
+        cursor.execute('DELETE FROM Passwords')
 
         cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?, ?)", (1, "admin", hash_password("adpass"), True))
-        cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (1, "YouTube", "https://www.youtube.com/", "ytadmin"))
 
         cursor.execute("INSERT INTO Credentials (ID, Username, Password, IsAdmin) VALUES (?, ?, ?, ?)", (2, "notadmin", hash_password("adfail"), False))
-        cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (2, "YouTube", "https://www.youtube.com/", "ytfail"))
     return
 
 
