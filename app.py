@@ -21,6 +21,10 @@ def index_page():
 def login_page():
     return render_template('login.html', error = None)
 
+@app.route('/about', methods=['GET'])
+def about_page():
+    return render_template('about.html', error = None)
+
 @app.route('/check_credentials', methods=['GET', 'POST'])
 def check_credentials():
     error = None
