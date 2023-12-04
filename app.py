@@ -21,10 +21,6 @@ def index_page():
 def login_page():
     return render_template('login.html', error = None)
 
-@app.route('/about', methods=['GET'])
-def about_page():
-    return render_template('about.html', error = None)
-
 @app.route('/check_credentials', methods=['GET', 'POST'])
 def check_credentials():
     error = None
@@ -251,10 +247,6 @@ def remove_password():
         return render_template('passwords.html', user = user_data_decrypt, error=error)
     
 
-@app.route('/more', methods=['GET', 'POST'])
-def more():
-    return
-    remove_user_passwords(2)
 
 if __name__ == '__main__':
     app.run()
