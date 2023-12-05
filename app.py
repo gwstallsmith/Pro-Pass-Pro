@@ -8,6 +8,7 @@ from utils import *
 
 app = Flask(__name__)
 
+# Loads images
 @app.route('/get_img/<filename>')
 def get_img(filename):
     return send_from_directory('assets', filename)
@@ -45,6 +46,7 @@ def check_credentials():
             response.set_cookie('ID', str(user[0]))
             response.set_cookie('Username', str(user[1]))
 
+            # Generate symmetric key with user passowrd on login
             generate_shared_secret(input_password)
 
             return response
@@ -153,6 +155,7 @@ def display_info():
         # If cookies are not present, redirect to login page or handle the situation accordingly
         return redirect('/login')
 
+# Function to add password or edit existing password
 @app.route('/store_password', methods=['GET', 'POST'])
 def store_passwords():
     error = None
@@ -171,15 +174,15 @@ def store_passwords():
         try:
             for encrypted_data in user_data:
                 if decrypt(encrypted_data[0]) == site_name and decrypt(encrypted_data[1]) == url:
-                    entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url == ?", (user_id, encrypted_data[0], encrypted_data[1]))
+                    entry_exists = cursor.execute("SELECT * FROM Passwords WHERE ID = ? AND SiteName = ? AND url == ?", (user_id, encrypted_data[0], encrypted_data[1])).fetchone()
         except:
             return render_template('login.html', error = "Shared secret expired.")
                 
+        # If an entry exists with the same site data we need to update, not store a new password
         if entry_exists:
             error = "Site and password already exist. Updating password."
-
             try:
-                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, user_data[0][0], user_data[0][1]))
+                cursor.execute("UPDATE Passwords SET Password = ? WHERE ID = ? AND SiteName = ? AND url = ?", (encrypt(new_password), user_id, entry_exists[1], entry_exists[2]))
             except:
                 return render_template('login.html', error = "Shared secret expired")
 
@@ -193,9 +196,12 @@ def store_passwords():
 
                 except:
                     return render_template('login.html', error = "Shared secret expired.")
+                
+            print(user_data_decrypt)
 
             return render_template('passwords.html', user = user_data_decrypt, error=error)
 
+        # If the entry is not found, we need to add a new password
         else:
             try:
                 cursor.execute("INSERT INTO Passwords (ID, SiteName, url, Password) VALUES (?, ?, ?, ?)", (user_id, encrypt(site_name), encrypt(url), encrypt(new_password)))
@@ -217,6 +223,7 @@ def store_passwords():
             return render_template('passwords.html', user = user_data_decrypt, error=error)
 
 
+# Function allowing users to delete entries from the database
 @app.route('/remove_password', methods=['GET', 'POST'])
 def remove_password():
     error = None
@@ -228,6 +235,7 @@ def remove_password():
 
         user_data = cursor.execute("SELECT SiteName FROM Passwords WHERE ID = ?", (user_id,)).fetchall()
 
+        # Delete all passwords with the site name specified
         for encrypted_site_name in user_data:
             if decrypt(encrypted_site_name[0]) == site_name:
                cursor.execute("DELETE FROM Passwords WHERE ID = ? AND SiteName = ?", (user_id, encrypted_site_name[0]))
