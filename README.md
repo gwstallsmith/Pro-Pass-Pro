@@ -1,8 +1,8 @@
-# Puff Puff Pass - Password Manager
+# Pro Pass Pro - Password Manager
 
 ## Overview
 
-Puff Puff Pass is a secure and user-friendly password manager designed to safeguard your sensitive information while offering convenient access to your credentials. It employs robust encryption techniques to ensure the safety of your passwords, ensuring they are only accessible to you.
+Professional Password Protector is a secure and user-friendly password manager designed to safeguard your sensitive information while offering convenient access to your credentials. It employs robust encryption techniques to ensure the safety of your passwords, ensuring they are only accessible to you.
 
 ## Features
 
@@ -14,7 +14,7 @@ Puff Puff Pass is a secure and user-friendly password manager designed to safegu
 
 ### Installation
 
-1. Clone the repository: `git clone https://github.com/gwstallsmith/Puff-Puff-Pass`
+1. Clone the repository: `git clone https://github.com/gwstallsmith/Pro-Pass-Pro`
 2. Follow installation instructions in the `README.md` of the repository.
 
 ### Usage
